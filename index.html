@@ -20,7 +20,8 @@
             <h2>List Property</h2>
             <input type="text" id="propertyName" class="form-control" placeholder="Property Name" maxlength="50">
             <input type="text" id="propertyLocation" class="form-control" placeholder="Location" maxlength="50">
-            <input type="number" id="propertyPrice" class="form-control" placeholder="Price per Month (ETH)" step="0.000000000000000001" min="0.000000000000000001">
+            <input type="number" id="propertyPrice" class="form-control" value="0.000000000000000001" readonly>
+            <small class="form-text text-muted">Price per Month (ETH) - Fixed at 0.000000000000000001 ETH</small>
             <button id="listProperty" class="btn btn-success mt-2">List Property</button>
         </div>
 

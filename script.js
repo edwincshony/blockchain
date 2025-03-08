@@ -25,6 +25,7 @@ const contractABI = [
 
 let web3, contract, account;
 
+// Connect Wallet
 async function connectWallet() {
     if (window.ethereum) {
         try {
@@ -38,38 +39,37 @@ async function connectWallet() {
 
             contract = new web3.eth.Contract(contractABI, contractAddress);
             
-            alert("Wallet connected successfully!");
+            alert("✅ Wallet connected successfully!");
         } catch (error) {
-            console.error("Wallet connection failed:", error);
+            console.error("❌ Wallet connection failed:", error);
             alert("Error connecting wallet.");
         }
     } else {
-        alert("MetaMask is not installed.");
+        alert("⚠️ MetaMask is not installed.");
     }
 }
 
+// List Property
 async function listProperty() {
     const name = document.getElementById("propertyName").value.trim();
     const location = document.getElementById("propertyLocation").value.trim();
-    const price = document.getElementById("propertyPrice").value.trim();
+    const price = "0.000000000000000001"; // Fixed price in ETH
 
-    if (!account) return alert("Please connect wallet first!");
-    if (!name || !location || !price || isNaN(price) || Number(price) <= 0) return alert("Enter valid property details.");
+    if (!account) return alert("⚠️ Please connect wallet first!");
+    if (!name || !location) return alert("⚠️ Enter valid property name and location.");
 
-    const priceInWei = web3.utils.toWei(price.toString(), "ether");
+    const priceInWei = web3.utils.toWei(price, "ether");
 
     try {
-        const gasEstimate = await contract.methods.listProperty(name, location, priceInWei).estimateGas({ from: account });
-        await contract.methods.listProperty(name, location, priceInWei).send({ from: account, gas: gasEstimate });
+        await contract.methods.listProperty(name, location, priceInWei).send({ from: account });
 
-        // Ensure property data is stored
         let properties = JSON.parse(localStorage.getItem("properties")) || [];
         const propertyId = properties.length;
 
         properties.push({ id: propertyId, name, location, pricePerMonth: price });
         localStorage.setItem("properties", JSON.stringify(properties));
 
-        alert(`Property listed successfully! ID: ${propertyId}`);
+        alert(`✅ Property listed successfully! ID: ${propertyId}`);
         document.getElementById("message").innerText = `Property listed. Use ID ${propertyId} to rent.`;
     } catch (error) {
         console.error("❌ Error listing property:", error);
@@ -77,28 +77,26 @@ async function listProperty() {
     }
 }
 
-
-
+// Rent Property
 async function rentProperty() {
     const propertyId = parseInt(document.getElementById("propertyId").value.trim(), 10);
     const months = parseInt(document.getElementById("rentalMonths").value.trim(), 10);
 
-    if (!account) return alert("Please connect wallet first!");
-    if (isNaN(propertyId) || propertyId < 0 || isNaN(months) || months <= 0) return alert("Enter valid rental details.");
+    if (!account) return alert("⚠️ Please connect wallet first!");
+    if (isNaN(propertyId) || propertyId < 0 || isNaN(months) || months <= 0) return alert("⚠️ Enter valid rental details.");
 
     let properties = JSON.parse(localStorage.getItem("properties")) || [];
     const property = properties.find(p => p.id === propertyId);
 
-    if (!property) return alert(`Invalid Property ID: ${propertyId}. Please check the listing.`);
+    if (!property) return alert(`⚠️ Invalid Property ID: ${propertyId}. Please check the listing.`);
 
     try {
         const pricePerMonthWei = web3.utils.toWei(property.pricePerMonth, "ether");
-        const totalAmountWei = BigInt(pricePerMonthWei) * BigInt(months);
+        const totalAmountWei = (BigInt(pricePerMonthWei) * BigInt(months)).toString();
 
-        const gasEstimate = await contract.methods.rentProperty(propertyId, months).estimateGas({ from: account, value: totalAmountWei });
-        await contract.methods.rentProperty(propertyId, months).send({ from: account, value: totalAmountWei, gas: gasEstimate });
+        await contract.methods.rentProperty(propertyId, months).send({ from: account, value: totalAmountWei });
 
-        alert("Property rented successfully!");
+        alert(`✅ Property ID ${propertyId} rented for ${months} months.`);
         document.getElementById("message").innerText = `Property ID ${propertyId} rented for ${months} months.`;
     } catch (error) {
         console.error("❌ Error renting property:", error);
@@ -106,8 +104,7 @@ async function rentProperty() {
     }
 }
 
-
-
+// Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("connectWallet").addEventListener("click", connectWallet);
     document.getElementById("listProperty").addEventListener("click", listProperty);
