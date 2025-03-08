@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decentralized Rental DApp</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Decentralized Rental System</h1>
+        
+        <p><strong>Connected Account:</strong> <span id="account">Not Connected</span></p>
+        <button id="connectWallet">Connect Wallet</button>
+
+        <h2>List Property</h2>
+        <input type="text" id="propertyName" placeholder="Property Name">
+        <input type="text" id="propertyLocation" placeholder="Location">
+        <input type="number" id="propertyPrice" placeholder="Price per Month (ETH)" step="0.000000000000000001">
+        <button id="listProperty">List Property</button>
+
+        <h2>Rent Property</h2>
+        <input type="number" id="propertyId" placeholder="Property ID" min="0">
+        <input type="number" id="rentalMonths" placeholder="Number of Months" min="1">
+        <button id="rentProperty">Rent Property</button>
+
+        <h2>Transaction Info</h2>
+        <p><strong>Estimated Gas:</strong> <span id="gasEstimate">-</span></p>
+        <p><strong>Gas Fee (SepoliaETH):</strong> <span id="gasFee">-</span></p>
+        <p><strong>Total Rent (SepoliaETH):</strong> <span id="totalRent">-</span></p>
+
+        <div id="message"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
